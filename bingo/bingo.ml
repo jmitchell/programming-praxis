@@ -28,7 +28,7 @@ let random_card () =
     Array.set col_array 0 vacant_vals.(0);
     Array.set col_array 1 vacant_vals.(1);
     Array.set col_array 3 vacant_vals.(2);
-    Array.set col_array 4 vacant_vals.(3);    
+    Array.set col_array 4 vacant_vals.(3);
     col_array in
   Array.of_list [
       column_vals 1 15 5;
@@ -47,15 +47,33 @@ let is_bingo card =
        else are_occupied xs
   in
   let lines_of_squares =
-    [
-      [(0,0); (1,0); (2,0); (3,0); (4,0)];
-    (* TODO *)
-    ]
+    let span =
+      List.range 0 5 in
+    let rows =
+      List.map span
+               ~f:(fun r ->
+                   List.map span ~f:(fun c -> (c,r))) in
+    let cols =
+      List.map span
+               ~f:(fun c ->
+                  List.map span ~f:(fun r -> (c,r))) in
+    let diags =
+      [
+        [(0,0); (1,1); (2,2); (3,3); (4,4)];
+        [(0,4); (1,3); (2,2); (3,1); (4,0)]
+      ] in
+    rows @ cols @ diags
   in
   List.exists lines_of_squares ~f:are_occupied
 
 let handle_call card n =
-  (* TODO *)
+  for i = 0 to 4 do
+    for j = 0 to 4 do
+      if card.(i).(j) = Vacant n
+      then card.(i).(j) <- Occupied
+      else ()
+    done
+  done
 
 let () =
   Random.self_init ()
