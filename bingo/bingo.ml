@@ -66,7 +66,7 @@ let is_bingo card =
   in
   List.exists lines_of_squares ~f:are_occupied
 
-let handle_call card n =
+let handle_call n card =
   for i = 0 to 4 do
     for j = 0 to 4 do
       if card.(i).(j) = Vacant n
@@ -74,6 +74,31 @@ let handle_call card n =
       else ()
     done
   done
+
+let bingo_session seats =
+  let cards =
+    List.map (List.range 0 seats) ~f:(fun _ -> random_card ()) in
+  let any_bingos () =
+    List.exists cards ~f:is_bingo in
+  let random_call_sequence =
+    shuffle (List.range 1 76) in
+  let rec announce_number remaining_numbers call_count =
+    let n =
+      List.hd_exn remaining_numbers in
+    List.iter cards ~f:(handle_call n);
+    if any_bingos ()
+    then call_count
+    else announce_number (List.tl_exn remaining_numbers) (call_count + 1)
+  in
+  announce_number random_call_sequence 1
+
+let average_calls_required seats simulations =
+  let call_counts =
+    List.map (List.range 0 simulations)
+             ~f:(fun _ -> bingo_session seats) in
+  let sum =
+    Float.of_int (List.fold call_counts ~init:0 ~f:(+)) in
+  sum /. Float.of_int simulations
 
 let () =
   Random.self_init ()
