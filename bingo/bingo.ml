@@ -1,5 +1,8 @@
 open Core.Std
 
+(* TODO: write a makefile and some tests *)
+(* TODO: try using OcamlViz or some other profiler to optimize performance *)
+
 let rec shuffle = function
   | [] -> []
   | [x] -> [x]
@@ -75,6 +78,7 @@ let handle_call n card =
     done
   done
 
+(* TODO: verify *)
 let bingo_session seats =
   let cards =
     List.map (List.range 0 seats) ~f:(fun _ -> random_card ()) in
@@ -92,6 +96,7 @@ let bingo_session seats =
   in
   announce_number random_call_sequence 1
 
+(* TODO: figure out how to parallelize *)
 let average_calls_required seats simulations =
   let call_counts =
     List.map (List.range 0 simulations)
