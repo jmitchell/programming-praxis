@@ -1,10 +1,13 @@
 #![allow(dead_code)]
 
 pub mod sudoku {
+
+    use std::ops::{Index, IndexMut};
+
     const WIDTH: usize = 9;
     const HEIGHT: usize = 9;
 
-    #[derive(Copy,Clone,Debug)]
+    #[derive(Copy,Clone,Debug,PartialEq,Eq)]
     pub enum Value {
         V1, V2, V3, V4, V5, V6, V7, V8, V9
     }
@@ -27,8 +30,8 @@ pub mod sudoku {
             }
         }
     }
-    
-    #[derive(Copy,Clone,Debug)]    
+
+    #[derive(Copy,Clone,Debug,PartialEq)]
     pub enum Cell {
         Given(Value),
         Deduced(Value),
@@ -66,15 +69,31 @@ pub mod sudoku {
             Puzzle::new(grid)
         }
     }
+
+    impl Index<(usize, usize)> for Puzzle {
+        type Output = Cell;
+
+        fn index<'a>(&'a self, (x,y): (usize, usize)) -> &'a Cell {
+            &self.grid[y][x]
+        }
+    }
+
+    impl IndexMut<(usize, usize)> for Puzzle {
+        fn index_mut<'a>(&'a mut self, (x,y): (usize, usize)) -> &'a mut Cell {
+            &mut self.grid[y][x]
+        }
+    }
 }
 
 #[cfg(test)]
 mod test {
     use sudoku::Puzzle;
+    use sudoku::Cell;
+    use sudoku::Value;
 
     #[test]
     fn initialize_puzzle() {
-        Puzzle::decode(
+        let puzzle = Puzzle::decode(
             [[7, 0, 0, 1, 0, 0, 0, 0, 0],
              [0, 2, 0, 0, 0, 0, 0, 1, 5],
              [0, 0, 0, 0, 0, 6, 3, 9, 0],
@@ -84,5 +103,6 @@ mod test {
              [0, 7, 8, 5, 0, 0, 0, 0, 0],
              [5, 6, 0, 0, 0, 0, 0, 4, 0],
              [0, 0, 0, 0, 0, 1, 0, 0, 2]]);
+        assert_eq!(puzzle[(1,4)], Cell::Given(Value::V4))
     }
 }
